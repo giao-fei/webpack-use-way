@@ -1,0 +1,305 @@
+一、前期准备工作：
+    (1)、先全局安装 nodejs 
+    (2)、全局安装：npm install webpack webpack-cli -g
+    (3)、npm init
+    (4)、创建 webpack.config.js 文件
+    (5)、创建文件夹的格式：
+         dist
+         src
+          main.js
+         index.html
+         webpack.config.js
+
+    (6)、webpack.config.js文件配置如下：
+         const path = require('path')
+         module.exports = {
+           entry:path.join(__dirname,'./src/main.js'),
+           output:{
+               path:path.join(__dirname,'./dist'),
+               filename:'bundle.js'
+            }
+         }
+
+二、webpack打包 .js 文件
+    (1)、本地安装 webpack 和 webpack-cli
+         npm install webpack webpack-cli --save-dev
+
+    (2)、在 webpack.config.js里面配置如下：
+         const path = require('path')
+         module.exports = {
+             entry:path.join(__dirname,'./src/main.js'),
+             output:{
+             path:path.join(__dirname,'./dist'),
+             filename:'bundle.js'
+            }
+         }
+    (3)、在package.json里面配置如下：
+         "scripts": {
+             "test": "echo \"Error: no test specified\" && exit 1",
+             "dev": "webpack --mode development && webpack-dev-server",
+             "build": "webpack --mode production"
+         } 
+    (4)、在 main.js 里面引入需要打包的 .js 文件：import './js/...'
+
+    (5)、最后在 html 页面里面引入 bundle.js 文件
+
+三、webpack打包 .css 文件
+    (1)、在本地下载 style-loader、css-loader
+         npm install style-loader css-loader --save-dev
+    
+    (2)、在 webpack.config.js 文件中配置如下：
+         module.exports = {
+          { 
+              test: /\.css$/,
+              use: [ 'style-loader', 'css-loader' ]               
+          },
+         }
+    
+四、webpack打包html文件
+    (1)、先在项目中下载 html-webpack-plugin
+         npm install html-webpack-plugin --save-dev
+    (2)、配置 webpack.config.js 文件
+         1- var HtmlWebpackPlugin = require('html-webpack-plugin')
+         2- plugins: [ new HtmlWebpackPlugin({ template: 'loder.html' }) ]
+    
+五、webpack打包css里面的图片
+    (1)、先在项目中下载 url-loader file-loader
+         npm install --save-dev url-loader file-loader
+    (2)、在 webpack.config.js 中添加配置如下：
+         module: {
+              {
+                test: /\.(png|jpg|gif|jpeg)$/,
+                use: [
+                      {
+                       loader: 'url-loader',
+                       options: {
+                          limit: 8192,
+                          name: 'img/[name].[hash:8].[ext]',
+                          publicPath: 'dist/'
+                        }               
+                    }
+                 ]
+              },
+          }
+
+六、webpack打包html中 img src 的图片
+    (1)、在项目中安装 html-loader
+         npm install --save-dev html-loader
+    (2)、在 webpack.config.js 中添加配置如下：
+        modules.exports: {
+         module:{
+          {
+            test: /\.html$/,
+            use: {
+                loader: 'html-loader',
+                options: { }
+             }
+          }
+        } 
+
+七、webpack打包第三方类库：
+    (1)、先项目中下载 jquery、bootstrap 包
+         npm install --save-dev jquery bootstrap、bootstrap-submenu、element-ui等包
+
+    (2)、在 webpack.config.js 中添加配置如下：
+         var webpack = require('webpack')
+         module.exports = {
+           output:{
+             publicPath: 'dist/'
+          },
+           module:{
+             rules: [
+                {
+                test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+                use: [
+                    {
+                      loader: 'file-loader',
+                      options: {
+                          limit: 8192000,
+                          name: 'font/[name].[hash:20].[ext]'
+                       }
+                     }
+                   ]
+                }
+             ]
+          },
+           plugins: [
+             new webpack.ProvidePlugin({
+              "$": "jquery",
+              "jQuery": "jquery",
+              "window.jQuery": "jquery"
+            })
+          ],
+          performance: {
+              hints:false           
+          }
+        }
+    (3)、在 main.js 文件中引入 
+         require('../node_modules/bootstrap/dist/css/bootstrap.min.css');
+         require('../node_modules/bootstrap/dist/js/bootstrap.js')
+    (4)、在 index.html 引入 bundle.js 文件
+
+八、webpack将 es6 语法转为 es5 语法 --》const、let --> var 
+    (1)、先在项目中下载安装包
+         npm install babel-loader@8.0.0-beta.0 @babel/core @babel/preset-env
+    (2)、在 webpack.config.js 中添加配置如下：     
+         modules.exports = {
+            module: {
+                      {
+                        test: /\.js$/,
+                        exclude: /(node_modules|bower_components)/,
+                        use: {
+                               loader: 'babel-loader',
+                               options: {
+                               presets: ['@babel/preset-env']
+                              }
+                            }
+                        } 
+                     }
+            }
+
+九、webpack打包第三方类库(vue)包
+    (1)、先在项目中下载 vue 包 
+         npm install vue -save
+    (2)、在 webpack.config.js 中添加如下配置：
+         modules.exports = {
+          resolve: {
+            alias: {
+             'vue$': 'vue/dist/vue.esm.js'
+            }
+          }
+         }
+    (3)、在main.js里面引用vue包
+        import Vue from 'vue'
+
+十、webpack打包 (.vue) 文件
+    (1)、先在本地项目中下载 vue-loader、vue-template-compiler 包
+         npm install vue-loader vue-template-compiler --save-dev
+    (2)、在 webpack.config.js 文件中添加配置如下：
+          1- const vueLoaderPlugin = require("vue-loader/lib/plugin");
+          2- modules.exports = {
+               module:{
+                  {test:/\.js$/, use: 'vue-loader'} 
+               },
+               plugins: [new vueLoaderPlugin()]
+          }
+
+十一、压缩bundle.js
+    1、npm install uglifyjs-webpack-plugin@1.1.1 --save-dev
+    2、配置webpack.config.js：
+      1- const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')
+      2- new UglifyjsWebpackPlugin() 
+
+十二、搭建本地 webpack-dev-server 服务器
+    1、npm install webpack-dev-server --save-dev
+    2、配置package.json： 
+       1- script:{ "dev": "webpack-dev-server --open" }
+    3、在webpack.config.js中配置：
+       1-  devServer: {
+           contentBase: './dist',
+           inline: true
+         } 
+
+十三、webpack配置的分离：
+    1、npm install webpack-merge --save-dev
+    2、创建一个build文件夹再创建三个.js文件 ( base.config.js、produ.config.js、dev.config.js )文件。
+    3、1- produ.config.js生产环境配置如下 --》webpack压缩：
+           // webpack压缩bundle.js文件
+           const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')
+           const webpackMerge = require('webpack-merge')
+           const baseConfig = require('./base.config.js')
+
+           module.exports = webpackMerge(baseConfig, {
+           plugins: [
+           // webpack压缩bundle.js文件 开发时不建议使用
+           new UglifyjsWebpackPlugin()
+          ]
+        })
+       2- dev.config.js开发环境下配置如下：
+           const webpackMerge = require('webpack-merge')
+           const baseConfig = require('./base.config.js')
+
+           module.exports = webpackMerge(baseConfig, {
+ 
+           // 搭建本地 webpack-dev-server 服务器
+           devServer: {
+           contentBase: '../dist',
+           inline: true
+          }
+        })
+       3- base.config.js文件配置如下：
+          const path = require('path')
+          var webpack = require('webpack')
+           // 打包html文件
+          var HtmlWebpackPlugin = require('html-webpack-plugin')
+
+          module.exports = {
+             entry:path.join(__dirname,'../src/main.js'),
+             output:{
+               path:path.join(__dirname,'../dist'),
+               filename:'js/bundle.js',
+           // publicPath: 'dist/'
+           },
+           // jquery插件配置好 bootstrap、bootstrap-submenu插件才能引用
+         plugins: [
+              new webpack.ProvidePlugin({
+              $: "jquery",
+              jQuery: "jquery",
+              "window.jQuery": "jquery",
+              Popper: ['popper.js', 'default'],           
+           }),
+          // 打包html文件
+             new HtmlWebpackPlugin({
+             template: 'index.html'
+           }),
+         ],    
+         module: {
+            rules: [
+            //  打包css文件
+            // css-loader只负责将css文件进行加载
+            // style-loader负责将css样式文件渲染到页面上
+           { 
+              test: /\.css$/,
+              use: [ 'style-loader', 'css-loader' ]               
+          },
+
+           //处理字体  <br>
+          {
+              test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+              use: [
+                    {
+                     loader: 'file-loader',
+                     options: {
+                         limit: 8100,
+                         name: 'font/[name].[hash:20].[ext]'
+                    }
+                }
+           ]
+          },
+            //  webpack打包html里面的图片
+          {
+            test: /\.html$/,
+            use: {
+                loader: 'html-loader',
+                options: {
+                    
+                }
+            }
+          },
+             // webpack打包CSS的图片
+          {
+            test: /\.(png|jpg|gif|jpeg)$/,
+            use: [
+                    {
+                     loader: 'url-loader',
+                     options: {
+                         limit: 8192,
+                         name: 'img/[name].[hash:8].[ext]'
+                 }               
+               }
+             ]
+          },
+ 
+        ]
+    },
+}
