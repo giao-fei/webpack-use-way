@@ -1,6 +1,7 @@
 一、前期准备工作：
     (1)、先全局安装 nodejs 
-    (2)、全局安装：npm install webpack webpack-cli -g
+    (2)、全局安装：npm install webpack webpack-cli -g 然后再在本地安装webpack webpack-cli：
+         npm insatll webpack webpack-cli --save-dev
     (3)、npm init
     (4)、创建 webpack.config.js 文件
     (5)、创建文件夹的格式：
