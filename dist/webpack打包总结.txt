@@ -50,12 +50,16 @@
     
     (2)、在 webpack.config.js 文件中配置如下：
          module.exports = {
-          { 
+          module:{
+           rules:[
+            { 
               test: /\.css$/,
               use: [ 'style-loader', 'css-loader' ]               
-          },
+            },
+          ]
          }
-    
+        }
+        
 四、webpack打包html文件
     (1)、先在项目中下载 html-webpack-plugin
          npm install html-webpack-plugin --save-dev
@@ -68,6 +72,7 @@
          npm install --save-dev url-loader file-loader
     (2)、在 webpack.config.js 中添加配置如下：
          module: {
+           rules:[
               {
                 test: /\.(png|jpg|gif|jpeg)$/,
                 use: [
@@ -81,6 +86,7 @@
                     }
                  ]
               },
+            ]
           }
 
 六、webpack打包html中 img src 的图片
@@ -89,15 +95,17 @@
     (2)、在 webpack.config.js 中添加配置如下：
         modules.exports: {
          module:{
-          {
+          rules:[
+           {
             test: /\.html$/,
             use: {
                 loader: 'html-loader',
                 options: { }
              }
           }
+         ]
         } 
-
+       }
 七、webpack打包第三方类库：
     (1)、先项目中下载 jquery、bootstrap 包
          npm install --save-dev jquery bootstrap、bootstrap-submenu、element-ui等包
@@ -180,7 +188,9 @@
           1- const vueLoaderPlugin = require("vue-loader/lib/plugin");
           2- modules.exports = {
                module:{
-                  {test:/\.js$/, use: 'vue-loader'} 
+                rules:[
+                  {test:/\.js$/, use: 'vue-loader'}
+                 ]
                },
                plugins: [new vueLoaderPlugin()]
           }
